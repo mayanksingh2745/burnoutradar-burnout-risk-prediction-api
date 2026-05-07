@@ -15,12 +15,11 @@ from src.ml.data_processing import load_and_preprocess_data
 def train_model():
     """
     Train a Voting Ensemble model and track with MLflow.
-    Uses class_weight='balanced' to handle class imbalance.
     """
     print("Loading and preprocessing data...")
     X_train, X_test, y_train, y_test = load_and_preprocess_data()
     
-    # Calculate scale_pos_weight for XGBoost (ratio of negative to positive)
+    # Calculate scale_pos_weight for XGBoost
     neg_count = (y_train == 0).sum()
     pos_count = (y_train == 1).sum()
     scale_pos_weight = neg_count / pos_count if pos_count > 0 else 1
@@ -31,11 +30,12 @@ def train_model():
     with mlflow.start_run():
         print("Training Voting Ensemble...")
         
-        # Define base models with class imbalance handling
         xgb_model = XGBClassifier(
             n_estimators=200,
             max_depth=5,
             learning_rate=0.1,
+            subsample=0.8,
+            colsample_bytree=0.8,
             scale_pos_weight=scale_pos_weight,
             eval_metric='logloss',
             random_state=42
@@ -43,6 +43,7 @@ def train_model():
         rf_model = RandomForestClassifier(
             n_estimators=200,
             max_depth=10,
+            min_samples_split=3,
             class_weight='balanced',
             random_state=42
         )
@@ -53,7 +54,6 @@ def train_model():
             random_state=42
         )
         
-        # Create Voting Classifier
         voting_clf = VotingClassifier(
             estimators=[
                 ('xgb', xgb_model),
@@ -63,7 +63,7 @@ def train_model():
             voting='soft'
         )
         
-        # Train model
+        # Train
         voting_clf.fit(X_train, y_train)
         
         # Evaluate
@@ -77,10 +77,12 @@ def train_model():
         # Log parameters
         mlflow.log_param("xgb_n_estimators", 200)
         mlflow.log_param("xgb_max_depth", 5)
+        mlflow.log_param("xgb_learning_rate", 0.1)
         mlflow.log_param("rf_n_estimators", 200)
         mlflow.log_param("rf_max_depth", 10)
         mlflow.log_param("lr_C", 0.5)
         mlflow.log_param("voting", "soft")
+        mlflow.log_param("num_features", X_train.shape[1])
         
         # Log metrics
         mlflow.log_metric("f1_score", f1)
@@ -92,6 +94,5 @@ def train_model():
         print("Model saved and tracked via MLflow.")
 
 if __name__ == "__main__":
-    # Ensure mlruns directory gets created in the project root
     os.chdir(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
     train_model()

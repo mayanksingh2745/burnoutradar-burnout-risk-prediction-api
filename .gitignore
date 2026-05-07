@@ -1,0 +1,41 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+
+# Pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Data files (too large for git)
+data/raw/
+data/processed/
+*.sav
+
+# MLflow
+mlruns/
+mlartifacts/
+
+# Models
+models/
+*.pkl
+*.model
+*.joblib
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
