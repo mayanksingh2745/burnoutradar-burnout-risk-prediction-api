@@ -1,20 +1,18 @@
 from pydantic import BaseModel, Field
 
 class PredictionRequest(BaseModel):
-    # Example fields: Adjust these based on your actual dataset features
-    designation: int = Field(..., description="Employee's designation level")
-    resource_allocation: float = Field(..., description="Amount of resources allocated to employee")
-    mental_fatigue_score: float = Field(..., description="Mental fatigue score from 0.0 to 10.0")
-    
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "designation": 2,
-                "resource_allocation": 5.0,
-                "mental_fatigue_score": 6.5
-            }
-        }
+    age: int = Field(..., ge=18, le=100, description="Age of the remote worker")
+    hours_worked: float = Field(..., ge=0, description="Hours worked per week")
+    stress_level: int = Field(..., ge=1, le=10, description="Self-reported stress level (1-10)")
+    sleep_hours: float = Field(..., ge=0, le=24, description="Average sleep hours per night")
+    support_level: int = Field(..., ge=1, le=5, description="Perceived support level (1-5)")
 
 class PredictionResponse(BaseModel):
-    burnout_risk: float = Field(..., description="Predicted burnout risk score (0 to 1)")
-    risk_category: str = Field(..., description="Categorical risk: Low, Medium, or High")
+    burnout_risk_prediction: int = Field(..., description="1 if high risk, 0 if low risk")
+    risk_label: str = Field(..., description="High Risk or Low Risk")
+
+class ExplanationResponse(BaseModel):
+    burnout_risk_prediction: int
+    risk_label: str
+    shap_values: dict = Field(..., description="SHAP feature importances for this prediction")
+    base_value: float = Field(..., description="SHAP base value")

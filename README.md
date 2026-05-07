@@ -1,31 +1,38 @@
-# BurnoutRadar: Burnout Risk Prediction API
+# BurnoutRadar - Burnout Risk Prediction API
 
-This is a well-structured AI Engineering project for predicting burnout risk based on employee data. 
+This repository contains the backend and ML pipeline for BurnoutRadar, an API designed to predict burnout risk in remote workers. 
 
-## Project Structure
+## Overview
+- **Machine Learning**: A Voting Ensemble combining XGBoost, Random Forest, and Logistic Regression, trained on the MIDUS dataset.
+- **Experiment Tracking**: MLflow is used for tracking parameters, metrics, and models.
+- **Explainability**: SHAP (SHapley Additive exPlanations) is integrated to provide feature importance and local explanations for predictions.
+- **API**: Served via FastAPI.
+- **CI/CD**: GitHub Actions pipeline and Docker containerization.
 
-- `data/`: Contains raw and processed data.
-- `notebooks/`: Jupyter notebooks for Exploratory Data Analysis (EDA) and model prototyping.
-- `models/`: Saved model artifacts (e.g., .pkl, .joblib).
-- `src/`: Core source code.
-  - `api/`: FastAPI application code.
-  - `ml/`: Machine learning training, preprocessing, and inference logic.
-  - `utils/`: Helper functions and logging.
-  - `config.py`: Configuration and environment variables.
-- `tests/`: Unit and integration tests.
+## Setup
 
-## Setup Instructions
+1. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-1. Clone the repository.
-2. Create a virtual environment: `python -m venv venv`
-3. Activate the environment:
-   - Windows: `venv\Scripts\activate`
-   - Linux/Mac: `source venv/bin/activate`
-4. Install dependencies: `pip install -r requirements.txt`
+2. **Training the Model:**
+   Before running the API, you must train the model so that `mlruns` directory has the saved model:
+   ```bash
+   python src/ml/train.py
+   ```
 
-## Running the API
+3. **Running the API:**
+   ```bash
+   uvicorn src.api.main:app --reload
+   ```
 
-```bash
-uvicorn src.api.main:app --reload
-```
-The API will be available at http://127.0.0.1:8000
+4. **Testing:**
+   ```bash
+   pytest tests/
+   ```
+
+## API Endpoints
+- `GET /health` - Check if the API is running and model is loaded.
+- `POST /predict` - Send worker features to get a burnout risk prediction.
+- `POST /explain` - Get a SHAP explanation for a given prediction.
