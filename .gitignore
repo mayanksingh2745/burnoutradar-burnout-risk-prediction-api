@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -65,3 +66,12 @@ mlruns/
 .idea/
 *.swp
 *.swo
+=======
+data/
+models/
+.env
+__pycache__/
+*.pkl
+*.pyc
+.ipynb_checkpoints/
+>>>>>>> 29f6858ed30970da5f0582170123b8c67cb1be06
